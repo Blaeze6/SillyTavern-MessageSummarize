@@ -292,6 +292,7 @@ You can revert settings to default by scrolling to the bottom of the config and 
 - I won't take any PRs refactoring the whole extension. Yes I know everything is in one file, I'll get around to it eventually.
 
 ### Known Issues
+- Incompatible with the WTracker extension (chat message removal may not function properly).
 - Using the API tokenizer may cause lag when opening chats under certain circumstances, cause currently unknown.
 - the {{lorebook}} prompt macro will not pick up world info entries if accessed from a different browser. This is because message lorebook info is stored in browser data.
 

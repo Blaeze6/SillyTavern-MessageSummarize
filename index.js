@@ -3818,7 +3818,7 @@ function update_message_inclusion_flags() {
         let message = chat[i];
 
         // Mark whether the message is lagging behind the exclusion threshold (even if no summary)
-        let lagging = i >= first_to_inject
+        let lagging = i > first_to_inject
 
         // If needed, mark the most recent user message as lagging
         if (exclude_messages && keep_last_user_message && !last_user_message_identified && message.is_user) {

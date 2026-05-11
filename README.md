@@ -271,7 +271,7 @@ This is most likely an issue with the summary prompt.\
 
 
 ### Reporting an Issue
-You can raise an issue here on github or on the SillyTavern [Discord server](https://discord.gg/sillytavern) as Qvink (#qvink1). There you will find [forum thread](https://discord.com/channels/1100685673633153084/1318109682329587722) dedicated to this extension (and others). You can send your problems there or DM me directly.
+You can raise an issue here on github or find me on the SillyTavern [Discord server](https://discord.gg/sillytavern) as Qvink (#qvink1). There you will find [forum thread](https://discord.com/channels/1100685673633153084/1318109682329587722) dedicated to this extension (and others). You can send your problems there or DM me directly.
 
 The best way to get a bug fixed is to help me reproduce it. Simply saying "X doesn't work" is unhelpful, even if you have a guess as to why.
 The easiest and quickest way to help me reproduce the bug is to provide the following information:

@@ -3599,7 +3599,7 @@ async function remember_message_toggle(indexes=null, value=null) {
 
         let memory = get_data(message, 'memory')
         if (value && !memory) {
-            summarize.push()
+            summarize.push(index)
         }
         debug(`Set message ${index} remembered status: ${value}`);
     }
@@ -3818,7 +3818,7 @@ function update_message_inclusion_flags() {
         let message = chat[i];
 
         // Mark whether the message is lagging behind the exclusion threshold (even if no summary)
-        let lagging = i >= first_to_inject
+        let lagging = i > first_to_inject
 
         // If needed, mark the most recent user message as lagging
         if (exclude_messages && keep_last_user_message && !last_user_message_identified && message.is_user) {
@@ -4083,6 +4083,7 @@ async function auto_summarize_chat(skip_initial_delay=true) {
 var last_message_swiped = null;  // if an index, that was the last message swiped
 var last_message = null; // if an index, that was the last message sent
 var just_opened = false;  // whether a chat has just been opened
+var just_aborted = false;  // whether we just aborted a stream
 async function on_chat_event(event=null, data=null) {
     // When the chat is updated, check if the summarization should be triggered
     debug("Chat updated:", event, data)
@@ -4124,7 +4125,7 @@ async function on_chat_event(event=null, data=null) {
             if (!chat_enabled()) break;  // if chat is disabled, do nothing
             if (!get_settings('auto_summarize')) break;  // if auto-summarize is disabled, do nothing
             if (!get_settings('auto_summarize_on_send')) break;  // if auto-summarize-on-send is disabled, skip
-            if (just_opened) break;  // don't auto-summarize if just opened the chat
+            if (just_opened || just_aborted) break;  // don't auto-summarize if just opened the chat
 
             // If a dry run, skip. If in a group chat and type is undefined, skip (Generate() is run twice in group chats, and the first one has undefined type).
             // generations in regular chats also have undefined type though, so only skip if undefined in group chats.
@@ -4145,7 +4146,7 @@ async function on_chat_event(event=null, data=null) {
             last_message = null;
             if (!chat_enabled()) break;  // if chat is disabled, do nothing
             if (!get_settings('auto_summarize')) break;  // if auto-summarize is disabled, do nothing
-            if (just_opened) break;  // don't auto-summarize if just opened the chat
+            if (just_opened || just_aborted) break;  // don't auto-summarize if just opened the chat
 
             // Summarize the chat if "include_user_messages" is enabled
             if (get_settings('include_user_messages')) {
@@ -4160,7 +4161,7 @@ async function on_chat_event(event=null, data=null) {
             if (!chat_enabled()) break;  // if chat is disabled, do nothing
             if (!context.groupId && context.characterId === undefined) break; // no characters or group selected
             if (streamingProcessor && !streamingProcessor.isFinished) break;  // Streaming in-progress
-            if (just_opened) break;  // don't auto-summarize if just opened the chat
+            if (just_opened || just_aborted) break;  // don't auto-summarize if just opened the chat
 
             if (last_message_swiped === index) {  // this is a swipe
                 let message = context.chat[index];
@@ -4218,11 +4219,18 @@ async function on_chat_event(event=null, data=null) {
             scrollChatToBottom();
             break;
 
+        case 'stream_aborted':  // When a stream is aborted, don't summarize the next message immediately sent
+            debug("Stream aborted, skipping summary of next message sent.")
+            just_aborted = true
+            return;
+
         default:
             if (!chat_enabled()) break;  // if chat is disabled, do nothing
             debug(`Unknown event: "${event}", refreshing memory`)
             refresh_memory();
     }
+
+    just_aborted = false;
 }
 
 
@@ -4947,6 +4955,7 @@ jQuery(async function () {
     eventSource.on('groupSelected', set_character_enabled_button_states);
     eventSource.on(event_types.GROUP_UPDATED, set_character_enabled_button_states);
     eventSource.on(event_types.GENERATION_STARTED, (type, stuff, dry) => on_chat_event('before_message', {'type': type, 'dry': dry}));
+    eventSource.on(event_types.GENERATION_STOPPED, (id) => on_chat_event('stream_aborted', id))
 
     // Update extension config on these events
     let update_events = [event_types.PRESET_CHANGED, event_types.CONNECTION_PROFILE_LOADED, event_types.CONNECTION_PROFILE_UPDATED]

@@ -3599,7 +3599,7 @@ async function remember_message_toggle(indexes=null, value=null) {
 
         let memory = get_data(message, 'memory')
         if (value && !memory) {
-            summarize.push()
+            summarize.push(index)
         }
         debug(`Set message ${index} remembered status: ${value}`);
     }

@@ -1,7 +1,9 @@
 # Changelog
 
-#### v1.3.26
+#### v1.3.27
 - **Fixed**: No longer summarizes after an aborted stream
+- **Fixed**: Remember button actually summarizes again
+- **Fixed**: Fixed the injection threshold being off by one
 
 #### v1.3.24
 **ST Version Requirement**: You must be on ST >= v1.14.0 (relies on [this PR](https://github.com/SillyTavern/SillyTavern/pull/4841))\

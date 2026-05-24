@@ -3142,16 +3142,16 @@ class SummaryPromptEditInterface {
             }
         }
 
-        for (let i in parts) {
-            let part = parts[i]?.trim()
-            if (!part) continue  // some parts are undefined
-            if (part.startsWith('{{') && part.endsWith('}}')) {  // this is a macro
-                let macro_name = part.slice(2, -2)  // get the macro name
+        for (let part of parts) {
+            let trimmed_part = part?.trim()
+            if (!trimmed_part) continue  // some parts are undefined
+            if (trimmed_part.startsWith('{{') && trimmed_part.endsWith('}}')) {  // this is a macro
+                let macro_name = trimmed_part.slice(2, -2)  // get the macro name
                 let value = macros[macro_name]
                 if (value === undefined) log(`Undefined macro in summary prompt: "${macro_name}"`)
                 add(value ?? '')  // don't merge
             } else {  // not a macro - merge according to the previous item
-                add([{content: parts[i]}])
+                add([{content: part}])
             }
         }
 

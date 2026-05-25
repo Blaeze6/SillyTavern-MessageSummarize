@@ -222,6 +222,7 @@ function get_last_char_message_index() {
 function get_last_prompt_size() {
     // return the size in tokens of the last message's prompt
     let last_index = get_last_char_message_index()
+    if (last_index == undefined) return 0
     let prompts = get_message_prompts(last_index)
     let raw_prompt = prompts?.rawPrompt
     if (raw_prompt === undefined) {

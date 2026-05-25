@@ -5,6 +5,7 @@
 - **Fixed**: Remember button actually summarizes again
 - **Fixed**: Fixed the injection threshold being off by one
 - **Fixed**: Fixed error when summarizing after the gallery window is opened
+- **Fixed**: Detecting size of last message prompt no longer fails in some cases
 
 #### v1.3.24
 **ST Version Requirement**: You must be on ST >= v1.14.0 (relies on [this PR](https://github.com/SillyTavern/SillyTavern/pull/4841))\

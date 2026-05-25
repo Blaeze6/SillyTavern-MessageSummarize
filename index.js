@@ -210,11 +210,20 @@ function get_message_prompts(index) {
         }
     }
 }
+function get_last_char_message_index() {
+    // Return the last index that was a character message
+    let chat = getContext().chat
+    for (let i = chat.length-1; i>=0; i--) {
+        let msg = chat[i]
+        if (msg.is_user || msg.is_system || msg.extra.type === system_message_types.NARRATOR) continue
+        return i  // a character message
+    }
+}
 function get_last_prompt_size() {
     // return the size in tokens of the last message's prompt
-    let last_index = getContext().chat.length - 1
+    let last_index = get_last_char_message_index()
     let prompts = get_message_prompts(last_index)
-    let raw_prompt = prompts.rawPrompt
+    let raw_prompt = prompts?.rawPrompt
     if (raw_prompt === undefined) {
         debug('Could not find raw prompt for message:', last_index)
         return 0

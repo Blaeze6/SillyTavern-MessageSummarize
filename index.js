@@ -4472,6 +4472,35 @@ function initialize_slash_commands() {
     let SlashCommandNamedArgument = ctx.SlashCommandNamedArgument
     let ARGUMENT_TYPE = ctx.ARGUMENT_TYPE
 
+	// --- BLAEZE CUSTOM RETAIN CALCULATOR START ---
+    SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+        name: 'qm-get-retain',
+        helpString: 'Calculates and returns the exact Retain# needed for Vector Storage based on summary injection.',
+        callback: (args) => {
+            refresh_memory(); // ensure flags are up to date
+            let ctx = getContext();
+            let chat = ctx.chat;
+
+            for (let i = chat.length - 1; i >= 0; i--) {
+                let include = get_data(chat[i], 'include');
+                let lagging = get_data(chat[i], 'lagging');
+
+                // Jeśli trafimy na pierwsze najnowsze summary:
+                if (include && !lagging) {
+                    let retainCount = chat.length - 1 - i;
+                    // Zabezpieczenie na wypadek zera (chociaż przy tej logice nie powinno wystąpić)
+                    return String(Math.max(retainCount, 1));
+                }
+            }
+
+            // FALLBACK: Jeśli nie ma żadnego summary (cały czat mieści się w raw window),
+            // RAG nie powinien wstrzykiwać niczego, co już jest w prompcie.
+            // Zwracamy całkowitą długość czatu (Vector zignoruje wszystko).
+            return String(chat.length || 1);
+        },
+    }));
+    // --- BLAEZE CUSTOM RETAIN CALCULATOR END ---
+
     SlashCommandParser.addCommandObject(SlashCommand.fromProps({
         name: 'qm-debug',
         aliases: ['qvink-memory-debug'],
@@ -4897,7 +4926,9 @@ function open_popout() {
     $popout.find('.dragClose').off('click').on('click', function () {
         close_popout()
     });
-
+	// --- BLAEZE CLOSE LEFT PANEL START ---
+	document.querySelector('#leftNavDrawerIcon.openIcon')?.click();
+	// --- BLAEZE CLOSE LEFT PANEL END ---
     $settings_element.appendTo($popout)  // move the settings to the popout
     $popout.fadeIn(animation_duration);
     POPOUT_VISIBLE = true
